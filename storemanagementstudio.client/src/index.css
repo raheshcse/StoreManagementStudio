@@ -1,0 +1,42 @@
+/* Layout */
+.app-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 220px;
+    background: #1e293b;
+    color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+    .sidebar a {
+        color: #cbd5e1;
+        text-decoration: none;
+        padding: 8px;
+        border-radius: 6px;
+    }
+
+        .sidebar a.active {
+            background: #334155;
+            color: white;
+        }
+
+.main-content {
+    flex: 1;
+    background: #f8fafc;
+}
+
+.navbar {
+    background: white;
+    padding: 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.page-content {
+    padding: 24px;
+}
