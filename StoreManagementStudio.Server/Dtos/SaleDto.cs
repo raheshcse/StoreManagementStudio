@@ -19,7 +19,10 @@ namespace StoreManagementStudio.Server.Dtos
         [Range(1, int.MaxValue, ErrorMessage = "StoreId must be a valid value")]
         public int StoreId { get; set; }
 
-        [Required(ErrorMessage = "DateSold is required")]
-        public DateTime DateSold { get; set; }
+        public string? ProductName { get; set; }
+        public string? CustomerName { get; set; }
+        public string? StoreName { get; set; }
+
+        public DateTime DateSold { get; set; } = DateTime.Now;
     }
 }

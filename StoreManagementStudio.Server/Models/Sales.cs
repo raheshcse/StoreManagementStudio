@@ -1,6 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations; // for [Required]
-using StoreManagementStudio.Server.Models;
 
 namespace StoreManagementStudio.Server.Models
 {
@@ -12,16 +10,12 @@ namespace StoreManagementStudio.Server.Models
         public int CustomerId { get; set; }
         public int StoreId { get; set; }
 
-        [Required]
         public DateTime DateSold { get; set; }
 
-        [Required] 
-        public virtual Product Product { get; set; } = null!;
+        public virtual Product? Product { get; set; }
 
-        [Required] 
-        public virtual Customer Customer { get; set; } = null!;
+        public virtual Customer? Customer { get; set; }
 
-        [Required] 
-        public virtual Store Store { get; set; } = null!;
+        public virtual Store? Store { get; set; }
     }
 }

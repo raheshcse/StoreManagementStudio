@@ -20,7 +20,7 @@ namespace StoreManagementStudio.Server.Models
 
             modelBuilder.Entity<Customer>(entity =>
             {
-                entity.ToTable("Customer");
+                entity.ToTable("Customers");   // ✅ FIXED
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Name).HasMaxLength(50);
                 entity.Property(e => e.Address).HasMaxLength(50);
@@ -28,7 +28,7 @@ namespace StoreManagementStudio.Server.Models
 
             modelBuilder.Entity<Product>(entity =>
             {
-                entity.ToTable("Product");
+                entity.ToTable("Products");   // ✅ FIXED
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Name).HasMaxLength(50);
                 entity.Property(e => e.Price).HasColumnType("money");
@@ -36,7 +36,7 @@ namespace StoreManagementStudio.Server.Models
 
             modelBuilder.Entity<Store>(entity =>
             {
-                entity.ToTable("Store");
+                entity.ToTable("Stores");   // ✅ FIXED
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Name).HasMaxLength(50);
                 entity.Property(e => e.Address).HasMaxLength(50);
@@ -44,8 +44,9 @@ namespace StoreManagementStudio.Server.Models
 
             modelBuilder.Entity<Sales>(entity =>
             {
-                entity.ToTable("Sales");
+                entity.ToTable("Sales");   // already correct
                 entity.HasKey(e => e.Id);
+
                 entity.Property(e => e.DateSold).HasColumnType("date");
 
                 entity.HasOne(e => e.Customer)

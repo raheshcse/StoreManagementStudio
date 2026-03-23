@@ -51,3 +51,16 @@ appsettings.Production.json
 # OS files
 # ======================
 Thumbs.db
+
+.vs/
+.vs/
+bin/
+obj/
+*.user
+*.http
+
+# Logs
+*.log
+
+# Env
+.env

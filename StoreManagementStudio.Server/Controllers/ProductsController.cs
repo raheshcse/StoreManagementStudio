@@ -6,107 +6,134 @@ using AutoMapper;
 
 namespace StoreManagementStudio.Server.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class ProductsController : ControllerBase
     {
         private readonly StoreManagementSystemContext _context;
         private readonly IMapper _mapper;
-        private readonly ILogger<ProductsController> _logger; //  Logger added
+        private readonly ILogger<ProductsController> _logger;
 
         public ProductsController(
             StoreManagementSystemContext context,
             IMapper mapper,
-            ILogger<ProductsController> logger) //  Inject ILogger
+            ILogger<ProductsController> logger)
         {
             _context = context;
             _mapper = mapper;
-            _logger = logger; // NEW
+            _logger = logger;
         }
 
-        // GET: api/Products
+        // ✅ GET ALL
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
         {
-            try // Error handling
+            try
             {
                 var products = await _context.Products.ToListAsync();
-                return _mapper.Map<List<ProductDto>>(products);
+                return Ok(_mapper.Map<List<ProductDto>>(products));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving products"); // Logging
-                return StatusCode(500, "An error occurred while retrieving products"); // NEW
+                _logger.LogError(ex, "Error retrieving products");
+                return StatusCode(500, "Error retrieving products");
             }
         }
 
-        // GET: api/Products/5
+        // ✅ GET BY ID
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductDto>> GetProduct(int id)
         {
-            try // NEW
+            try
             {
                 var product = await _context.Products.FindAsync(id);
-                if (product == null) return NotFound();
 
-                return _mapper.Map<ProductDto>(product);
+                if (product == null)
+                    return NotFound();
+
+                return Ok(_mapper.Map<ProductDto>(product));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving product with ID {Id}", id); // NEW
-                return StatusCode(500, "An error occurred while retrieving the product"); // NEW
+                _logger.LogError(ex, "Error retrieving product {Id}", id);
+                return StatusCode(500, "Error retrieving product");
             }
         }
 
-        // POST: api/Products
+        // ✅ CREATE
         [HttpPost]
         public async Task<ActionResult<ProductDto>> PostProduct(ProductDto productDto)
         {
-            if (!ModelState.IsValid) // NEW: Runtime validation
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            try // NEW
+            try
             {
                 var product = _mapper.Map<Product>(productDto);
+
+                // Force EF to treat as new entity
+                product.Id = 0;
+
                 _context.Products.Add(product);
                 await _context.SaveChangesAsync();
 
-                return CreatedAtAction(
-                    nameof(GetProduct),
-                    new { id = product.Id },
-                    _mapper.Map<ProductDto>(product));
+                var result = _mapper.Map<ProductDto>(product);
+
+                return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, result);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error creating product"); // NEW
-                return StatusCode(500, "An error occurred while creating the product"); // NEW
+                return StatusCode(500, ex.InnerException?.Message ?? ex.Message);
             }
         }
 
-        // PUT: api/Products/5
+        // ✅ UPDATE
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProduct(int id, ProductDto productDto)
         {
-            if (!ModelState.IsValid) // Runtime validation
-                return BadRequest(ModelState);
-
             if (id != productDto.Id)
-                return BadRequest("Product ID mismatch");
+                return BadRequest("ID mismatch");
 
-            try // NEW
+            try
             {
                 var product = await _context.Products.FindAsync(id);
-                if (product == null) return NotFound();
+
+                if (product == null)
+                    return NotFound();
 
                 _mapper.Map(productDto, product);
+
                 await _context.SaveChangesAsync();
 
                 return NoContent();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error updating product with ID {Id}", id); //  NEW
-                return StatusCode(500, "An error occurred while updating the product"); // NEW
+                _logger.LogError(ex, "Error updating product {Id}", id);
+                return StatusCode(500, "Error updating product");
+            }
+        }
+
+        // ✅ DELETE (YOU WERE MISSING THIS ❗)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            try
+            {
+                var product = await _context.Products.FindAsync(id);
+
+                if (product == null)
+                    return NotFound();
+
+                _context.Products.Remove(product);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting product {Id}", id);
+                return StatusCode(500, "Error deleting product");
             }
         }
     }

@@ -1,14 +1,15 @@
-import { configureStore } from "@reduxjs/toolkit";
-import productReducer from "../features/products/productSlice";
-import customerReducer from "../features/customers/customerSlice";
-import storeReducer from "../features/stores/storeSlice";
+﻿import { configureStore } from "@reduxjs/toolkit";
+
+import productsReducer from "../features/products/productSlice";
+import customersReducer from "../features/customers/customerSlice";
 import salesReducer from "../features/sales/salesSlice";
+import storesReducer from "../features/stores/storeSlice";
 
 export const store = configureStore({
-  reducer: {
-    products: productReducer,
-    customers: customerReducer,
-    stores: storeReducer,
-    sales: salesReducer
-  }
+    reducer: {
+        products: productsReducer,
+        customers: customersReducer,  
+        stores: storesReducer,
+        sales: salesReducer
+    }
 });

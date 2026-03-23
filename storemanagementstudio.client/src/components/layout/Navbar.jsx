@@ -1,9 +1,17 @@
-const Navbar = () => {
+﻿function Navbar() {
     return (
-        <nav className="navbar">
-            <h2>Store Management Studio</h2>
-        </nav>
+        <div className="navbar">
+            <h2>Store Management System</h2>
+
+            <div className="nav-right">
+                <span className="icon">🔔</span>
+
+                <div className="user-box">
+                    <span>Admin</span>
+                </div>
+            </div>
+        </div>
     );
-};
+}
 
 export default Navbar;

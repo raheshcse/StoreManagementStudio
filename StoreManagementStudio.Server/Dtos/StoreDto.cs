@@ -10,7 +10,7 @@ namespace StoreManagementStudio.Server.Dtos
         [StringLength(100, ErrorMessage = "Store name cannot exceed 100 characters")]
         public string Name { get; set; } = null!;
 
-        [Required(ErrorMessage = "Store address is required")]
+        
         [StringLength(200, ErrorMessage = "Store address cannot exceed 200 characters")]
         public string Address { get; set; } = null!;
     }

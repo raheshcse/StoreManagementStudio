@@ -12,13 +12,16 @@ namespace StoreManagementStudio.Server.Controllers
     {
         private readonly StoreManagementSystemContext _context;
         private readonly IMapper _mapper;
-        private readonly ILogger<CustomersController> _logger; //  Added ILogger
+        private readonly ILogger<CustomersController> _logger;
 
-        public CustomersController(StoreManagementSystemContext context, IMapper mapper, ILogger<CustomersController> logger) // Inject ILogger
+        public CustomersController(
+            StoreManagementSystemContext context,
+            IMapper mapper,
+            ILogger<CustomersController> logger)
         {
             _context = context;
             _mapper = mapper;
-            _logger = logger; // Assign ILogger
+            _logger = logger;
         }
 
         // GET: api/Customers
@@ -28,12 +31,17 @@ namespace StoreManagementStudio.Server.Controllers
             try
             {
                 var customers = await _context.Customers.ToListAsync();
-                return _mapper.Map<List<CustomerDto>>(customers);
+
+                var result = _mapper.Map<List<CustomerDto>>(customers);
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching all customers"); //  Log exception
-                return StatusCode(500, "An error occurred while fetching customers"); // Return meaningful error
+                _logger.LogError(ex, "Error fetching customers");
+
+                // Show real error temporarily for debugging
+                return StatusCode(500, ex.Message);
             }
         }
 
@@ -44,14 +52,17 @@ namespace StoreManagementStudio.Server.Controllers
             try
             {
                 var customer = await _context.Customers.FindAsync(id);
-                if (customer == null) return NotFound();
 
-                return _mapper.Map<CustomerDto>(customer);
+                if (customer == null)
+                    return NotFound();
+
+                return Ok(_mapper.Map<CustomerDto>(customer));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching customer with ID {CustomerId}", id); //  Log exception
-                return StatusCode(500, "An error occurred while fetching the customer"); //  Return meaningful error
+                _logger.LogError(ex, "Error fetching customer");
+
+                return StatusCode(500, ex.Message);
             }
         }
 
@@ -59,19 +70,31 @@ namespace StoreManagementStudio.Server.Controllers
         [HttpPost]
         public async Task<ActionResult<CustomerDto>> PostCustomer(CustomerDto customerDto)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState); //  Added runtime validation check
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
             try
             {
+                // Map DTO → Entity
                 var customer = _mapper.Map<Customer>(customerDto);
+
+                // Save to database
                 _context.Customers.Add(customer);
                 await _context.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetCustomer), new { id = customer.Id }, _mapper.Map<CustomerDto>(customer));
+
+                // Map back to DTO
+                var result = _mapper.Map<CustomerDto>(customer);
+
+                // Return 201 Created
+                return CreatedAtAction(nameof(GetCustomer), new { id = result.Id }, result);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error creating a new customer"); //  Log exception
-                return StatusCode(500, "An error occurred while creating the customer"); //  Return meaningful error
+                _logger.LogError(ex, "Error creating customer");
+
+                return StatusCode(500, "An error occurred while creating the customer.");
             }
         }
 
@@ -79,23 +102,27 @@ namespace StoreManagementStudio.Server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCustomer(int id, CustomerDto customerDto)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState); //  Added runtime validation check
-            if (id != customerDto.Id) return BadRequest("ID mismatch");
+            if (id != customerDto.Id)
+                return BadRequest("ID mismatch");
 
             try
             {
                 var customer = await _context.Customers.FindAsync(id);
-                if (customer == null) return NotFound();
+
+                if (customer == null)
+                    return NotFound();
 
                 _mapper.Map(customerDto, customer);
+
                 await _context.SaveChangesAsync();
 
                 return NoContent();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error updating customer with ID {CustomerId}", id); //  Log exception
-                return StatusCode(500, "An error occurred while updating the customer"); //  Return meaningful error
+                _logger.LogError(ex, "Error updating customer");
+
+                return StatusCode(500, ex.Message);
             }
         }
 
@@ -106,17 +133,21 @@ namespace StoreManagementStudio.Server.Controllers
             try
             {
                 var customer = await _context.Customers.FindAsync(id);
-                if (customer == null) return NotFound();
+
+                if (customer == null)
+                    return NotFound();
 
                 _context.Customers.Remove(customer);
+
                 await _context.SaveChangesAsync();
 
                 return NoContent();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error deleting customer with ID {CustomerId}", id); //  Log exception
-                return StatusCode(500, "An error occurred while deleting the customer"); //  Return meaningful error
+                _logger.LogError(ex, "Error deleting customer");
+
+                return StatusCode(500, ex.Message);
             }
         }
     }

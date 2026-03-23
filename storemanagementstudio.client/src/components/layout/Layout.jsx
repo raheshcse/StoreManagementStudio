@@ -1,18 +1,21 @@
-import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
+import Navbar from "./Navbar";
+import { Outlet } from "react-router-dom";
 
-const Layout = ({ children }) => {
+function Layout() {
     return (
         <div className="app-container">
             <Sidebar />
+
             <div className="main-content">
                 <Navbar />
+
                 <div className="page-content">
-                    {children}
+                    <Outlet />
                 </div>
             </div>
         </div>
     );
-};
+}
 
 export default Layout;

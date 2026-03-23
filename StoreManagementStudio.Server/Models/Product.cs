@@ -13,6 +13,8 @@ namespace StoreManagementStudio.Server.Models
         [Required]
         public decimal Price { get; set; }
 
+        public int Stock { get; set; }
+
         public virtual ICollection<Sales> Sales { get; set; } = new List<Sales>();
     }
 }

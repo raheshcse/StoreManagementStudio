@@ -3,7 +3,7 @@ using StoreManagementStudio.Server.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Controllers
+// Add Controllers
 builder.Services.AddControllers();
 
 // Swagger
@@ -13,37 +13,43 @@ builder.Services.AddSwaggerGen();
 // AutoMapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-// DbContext
+// Database Connection
 builder.Services.AddDbContext<StoreManagementSystemContext>(options =>
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("StoreDb"))
+        builder.Configuration.GetConnectionString("StoreDb")
+    )
 );
 
-// CORS (React dev server)
+// CORS for React Frontend
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("CorsPolicy", policy =>
-        policy.AllowAnyOrigin()
-              .AllowAnyHeader()
-              .AllowAnyMethod());
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.WithOrigins("https://localhost:8641", "http://localhost:8641")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
 });
 
 var app = builder.Build();
 
+// Swagger
 app.UseSwagger();
 app.UseSwaggerUI();
 
-
-
 app.UseRouting();
 
-app.UseCors("CorsPolicy");
+// Enable CORS
+app.UseCors("AllowFrontend");
 
-app.UseAuthorization();
-
-// Map controllers
+// Map API Controllers
 app.MapControllers();
 
+// Serve React Frontend
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
+app.MapFallbackToFile("index.html");
 
 app.Run();

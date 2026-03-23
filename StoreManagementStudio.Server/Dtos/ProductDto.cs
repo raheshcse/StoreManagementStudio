@@ -11,7 +11,12 @@ namespace StoreManagementStudio.Server.Dtos
         public string Name { get; set; } = null!;
 
         [Required(ErrorMessage = "Price is required")]
-        [Range(0.0, double.MaxValue, ErrorMessage = "Price must be a positive value")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
         public decimal Price { get; set; }
+
+        // ✅ NEW FIELD (IMPORTANT)
+        [Required(ErrorMessage = "Stock is required")]
+        [Range(0, int.MaxValue, ErrorMessage = "Stock must be 0 or more")]
+        public int Stock { get; set; }
     }
 }

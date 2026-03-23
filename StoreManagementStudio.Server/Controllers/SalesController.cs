@@ -28,7 +28,7 @@ namespace StoreManagementStudio.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SaleDto>>> GetSales()
         {
-            try // NEW: Error handling
+            try
             {
                 var sales = await _context.Sales
                     .Include(s => s.Product)
@@ -36,12 +36,26 @@ namespace StoreManagementStudio.Server.Controllers
                     .Include(s => s.Store)
                     .ToListAsync();
 
-                return _mapper.Map<List<SaleDto>>(sales);
+                var result = sales.Select(s => new SaleDto
+                {
+                    Id = s.Id,
+                    ProductId = s.ProductId,
+                    CustomerId = s.CustomerId,
+                    StoreId = s.StoreId,
+
+                    ProductName = s.Product?.Name ?? "",
+                    CustomerName = s.Customer?.Name ?? "",
+                    StoreName = s.Store?.Name ?? "",
+
+                    DateSold = s.DateSold
+                }).ToList();
+
+                return result;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving sales"); // ✅ NEW
-                return StatusCode(500, "An error occurred while retrieving sales"); // ✅ NEW
+                _logger.LogError(ex, "Error retrieving sales");
+                return StatusCode(500, ex.Message);
             }
         }
 
@@ -49,30 +63,60 @@ namespace StoreManagementStudio.Server.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<SaleDto>> GetSale(int id)
         {
-            try // NEW
+            try
             {
-                var sale = await _context.Sales.FindAsync(id);
+                var sale = await _context.Sales
+                    .Include(s => s.Product)
+                    .Include(s => s.Customer)
+                    .Include(s => s.Store)
+                    .Where(s => s.Id == id)
+                    .Select(s => new SaleDto
+                    {
+                        Id = s.Id,
+                        ProductId = s.ProductId,
+                        CustomerId = s.CustomerId,
+                        StoreId = s.StoreId,
+                        DateSold = s.DateSold,
+
+                        // ✅ ADD THIS (you missed earlier)
+                        ProductName = s.Product != null ? s.Product.Name : "",
+                        CustomerName = s.Customer != null ? s.Customer.Name : "",
+                        StoreName = s.Store != null ? s.Store.Name : ""
+                    })
+                    .FirstOrDefaultAsync();
+
                 if (sale == null) return NotFound();
 
-                return _mapper.Map<SaleDto>(sale);
+                return sale;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving sale with ID {Id}", id); //  NEW
-                return StatusCode(500, "An error occurred while retrieving the sale"); //  NEW
+                _logger.LogError(ex, "Error retrieving sale with ID {Id}", id);
+                return StatusCode(500, "Error retrieving sale");
             }
         }
 
         // POST: api/Sales
         [HttpPost]
-        public async Task<ActionResult<SaleDto>> PostSale(SaleDto saleDto)
+        public async Task<ActionResult<SaleDto>> PostSale([FromBody] SaleDto saleDto)
         {
-            if (!ModelState.IsValid) // Runtime validation
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            try // NEW
+            try
             {
-                var sale = _mapper.Map<Sales>(saleDto);
+                var sale = new Sales
+                {
+                    ProductId = saleDto.ProductId,
+                    CustomerId = saleDto.CustomerId,
+                    StoreId = saleDto.StoreId,
+                    DateSold = saleDto.DateSold
+                };
+
+                // ✅ Ensure DateSold is set
+                if (sale.DateSold == default)
+                    sale.DateSold = DateTime.Now;
+
                 _context.Sales.Add(sale);
                 await _context.SaveChangesAsync();
 
@@ -83,8 +127,8 @@ namespace StoreManagementStudio.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error creating sale"); //  NEW
-                return StatusCode(500, "An error occurred while creating the sale"); //  NEW
+                _logger.LogError(ex, "Error creating sale");
+                return StatusCode(500, "Error creating sale");
             }
         }
 
@@ -103,7 +147,10 @@ namespace StoreManagementStudio.Server.Controllers
                 var sale = await _context.Sales.FindAsync(id);
                 if (sale == null) return NotFound();
 
-                _mapper.Map(saleDto, sale);
+                sale.ProductId = saleDto.ProductId;
+                sale.CustomerId = saleDto.CustomerId;
+                sale.StoreId = saleDto.StoreId;
+                sale.DateSold = saleDto.DateSold;
                 await _context.SaveChangesAsync();
 
                 return NoContent();

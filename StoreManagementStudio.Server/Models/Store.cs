@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StoreManagementStudio.Server.Models
 {
@@ -10,6 +11,7 @@ namespace StoreManagementStudio.Server.Models
         [Required]
         public string Name { get; set; } = null!;
 
+        [Column("Location")]
         public string? Address { get; set; }
 
         public virtual ICollection<Sales> Sales { get; set; } = new List<Sales>();
