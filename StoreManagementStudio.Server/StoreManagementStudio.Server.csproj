@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <SpaRoot>..\storemanagementstudio.client</SpaRoot>
+    <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
+    <SpaProxyServerUrl>https://localhost:8641</SpaProxyServerUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Dtos\ProductDto%27s\**" />
+    <Compile Remove="Dtos\SaleDtos%27s\**" />
+    <Compile Remove="Dtos\StoreDto%27s\**" />
+    <Content Remove="Dtos\ProductDto%27s\**" />
+    <Content Remove="Dtos\SaleDtos%27s\**" />
+    <Content Remove="Dtos\StoreDto%27s\**" />
+    <EmbeddedResource Remove="Dtos\ProductDto%27s\**" />
+    <EmbeddedResource Remove="Dtos\SaleDtos%27s\**" />
+    <EmbeddedResource Remove="Dtos\StoreDto%27s\**" />
+    <None Remove="Dtos\ProductDto%27s\**" />
+    <None Remove="Dtos\SaleDtos%27s\**" />
+    <None Remove="Dtos\StoreDto%27s\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="ApplicationDbContext.cs" />
+    <Compile Remove="Models\Sale.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaProxy">
+      <Version>8.*-*</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.1">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\storemanagementstudio.client\storemanagementstudio.client.esproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+
+</Project>
