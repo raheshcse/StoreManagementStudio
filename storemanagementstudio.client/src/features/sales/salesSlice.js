@@ -79,7 +79,11 @@ export const updateSale = ({ id, saleData }) => async (dispatch) => {
             headers: {
                 "Content-Type": "application/json"
             },
+<<<<<<< HEAD
             body: JSON.stringify({ id, ...saleData }) // API requires body id to match route id
+=======
+            body: JSON.stringify(saleData)
+>>>>>>> origin/main
         });
 
         dispatch(fetchSales()); // refresh list

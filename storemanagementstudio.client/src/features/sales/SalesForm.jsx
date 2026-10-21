@@ -68,8 +68,12 @@ function SalesForm({ selectedSale, clearSelection }) {
             productId: Number(formData.productId),
             customerId: Number(formData.customerId),
             storeId: Number(formData.storeId),
+<<<<<<< HEAD
             // blank date is omitted so the API applies its default (DateTime.Now); "" fails DateTime binding with 400
             dateSold: formData.dateSold || undefined
+=======
+            dateSold: formData.dateSold
+>>>>>>> origin/main
         };
 
         if (selectedSale && selectedSale._editing) {
